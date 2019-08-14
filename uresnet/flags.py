@@ -160,10 +160,19 @@ class URESNET_FLAGS:
             if name in ['func','script']: continue
             setattr(self, name.upper(), args[name])
         # os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-        os.environ['CUDA_VISIBLE_DEVICES'] = self.GPUS
+        # whats going on with  GPUS? what is the expected type?
+
         if len(self.GPUS) > 0:
             self.GPUS = list(range(len(self.GPUS.split(','))))
-        # self.GPUS = [int(gpu) for gpu in self.GPUS.split(',')]
+            gpustr = ""
+            for p in self.GPUS:
+                gpustr = "%d"%(p)
+                if p+1<len(self.GPUS):
+                    gpustr += ","
+            os.environ['CUDA_VISIBLE_DEVICES'] = gpustr
+        else:
+            os.environ['CUDA_VISIBLE_DEVICES'] = ""
+            
         self.INPUT_FILE=[str(f) for f in self.INPUT_FILE.split(',')]
         self.DATA_KEYS=self.DATA_KEYS.split(',')
         if self.SEED < 0:
