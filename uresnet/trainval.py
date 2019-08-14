@@ -55,11 +55,45 @@ class trainval(object):
         Run forward for
         flags.BATCH_SIZE / (flags.MINIBATCH_SIZE * len(flags.GPUS)) times
         """
+        # taritree: for debug
+        #from ROOT import TH1D, TCanvas
+
         res_combined = {}
         for idx in range(len(data_blob['data'])):
             blob = {}
             for key in data_blob.keys():
                 blob[key] = data_blob[key][idx]
+
+            # we threshold the data: hack by Taritree for debugging
+            # for idx in xrange(len(blob['data'])):
+            #     print("elements in idx[{}]: {}".format(idx,len(blob['data'][idx])))
+            #     #print("dtype for idx[{}]: {}".format(idx,blob['data'][idx].dtype))
+            #     data  = blob['data'][idx]
+            #     nabovethresh = np.sum( (data[:,3]>=10) )
+            #     print("above thresh: {}".format(nabovethresh))
+            #     iabove = 0
+            #     #thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=data.dtype  )
+            #     thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=np.float32  )
+            #     for i in xrange(data.shape[0]):
+            #         if data[i,3]>=10:
+            #             thresh_data[iabove,:]  = data[i,:]
+            #             iabove+=1
+
+            #     if 'label' in blob:
+            #         label = blob['label'][idx]                
+            #         thresh_label = np.zeros( (nabovethresh,label.shape[1]), dtype=label.dtype )
+            #         iabove = 0
+            #         for i in xrange(data.shape[0]):
+            #             if data[i,3]>=10:
+            #                 thresh_label[iabove,:] = label[i,:]
+            #                 iabove+=1
+
+            #     blob['data'][idx]  = thresh_data
+            #     if 'label' in blob:
+            #         blob['label'][idx] = thresh_label
+
+            #     np.savez('dump.npz',data=thresh_data)
+                    
             res = self._forward(blob,
                                 epoch=epoch)
             for key in res.keys():
@@ -67,9 +101,49 @@ class trainval(object):
                     res_combined[key] = res[key]
                 else:
                     res_combined[key].extend(res[key])
+
+            # visualization (for debug): Taritree
+            # seg = res['segmentation'][0]
+            # pred = np.argmax(seg, axis=1)
+            # pred[ pred>=2 ] = 3
+            # pred[ pred==1 ] = 2
+            # pred[ pred==0 ] = 1
+            # pred *= 60
+
+            # dataview = np.zeros( (512,512) )            
+            # predview = np.zeros( (512,512) )
+
+            # hpixels = TH1D("hpixels",";pixel values;",1000, 0, 100 )
+            # hlow    = TH1D("hlow",";pixel values;",1000, 0, 10 )        
+            
+            # data = data_blob['data'][0][0]
+            # for idx in xrange(data.shape[0] ):
+            #     dataview[ int(data[idx,0]), int(data[idx,1]) ] = data[idx,3]
+            #     predview[ int(data[idx,0]), int(data[idx,1]) ] = pred[idx]
+
+            #     hpixels.Fill( float(data[idx,3]) )
+            #     hlow.Fill( float(data[idx,3]) )            
+                
+            # matplotlib.image.imsave('pred0.png', predview)
+            # matplotlib.image.imsave('data0.png', dataview)
+
+
+            # canv = TCanvas("cpixel","pixels",1200,500)
+            # canv.Divide(2,1)
+            # canv.cd(1)
+            # hpixels.Draw("hist")
+            # canv.cd(2)
+            # hlow.Draw("hist")
+            # canv.Draw()
+            # canv.SaveAs("hist0.png")
+            
+            
+
         # Average loss and acc over all the events in this batch
+        print("calc accuracy/loss")
         res_combined['accuracy'] = np.array(res_combined['accuracy']).sum() / batch_size
         res_combined['loss_seg'] = np.array(res_combined['loss_seg']).sum() / batch_size
+
         return res_combined
 
     def _forward(self, data_blob, epoch=None):
@@ -81,14 +155,16 @@ class trainval(object):
         For dense uresnet:
         data[0]: shape=(minibatch size, channel, spatial size, spatial size, spatial size)
         """
-        data = data_blob['data']
-        label = data_blob.get('label', None)
+        data   = data_blob['data']
+        label  = data_blob.get('label', None)
         weight = data_blob.get('weight', None)
-        # matplotlib.image.imsave('data0.png', data[0, 0, ...])
+
         # matplotlib.image.imsave('data1.png', data[1, 0, ...])
         # print(label.shape, np.unique(label, return_counts=True))
-        # matplotlib.image.imsave('label0.png', label[0, 0, ...])
+        #matplotlib.image.imsave('label0.png', label[0, 0, ...])
         # matplotlib.image.imsave('label1.png', label[1, 0, ...])
+        #print("_forward: train={}".format(self._flags.TRAIN))
+        
         with torch.set_grad_enabled(self._flags.TRAIN):
             # Segmentation
             data = [torch.as_tensor(d) for d in data]
