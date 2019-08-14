@@ -3,11 +3,6 @@ from __future__ import division
 from __future__ import print_function
 import numpy as np
 import torch
-from sklearn.cluster import DBSCAN
-import matplotlib
-from sklearn.metrics import log_loss
-from scipy.spatial.distance import cdist
-from sklearn.cluster import DBSCAN
 
 
 class CSVData:
@@ -78,6 +73,12 @@ def print_memory(msg=''):
 def compute_metrics_sparse(data_v, label_v, softmax_v, idx_v, N=192, particles=None):
     assert len(data_v) == len(label_v)
     assert len(data_v) == len(softmax_v)
+
+    import matplotlib
+    from sklearn.cluster import DBSCAN
+    from sklearn.metrics import log_loss
+    from scipy.spatial.distance import cdist
+    
     res = {
         'acc': [],
         'correct_softmax': [],
