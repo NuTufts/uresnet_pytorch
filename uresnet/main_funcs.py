@@ -11,7 +11,6 @@ from uresnet.iotools import io_factory
 from uresnet.trainval import trainval
 import uresnet.utils as utils
 import torch
-import psutil
 
 
 def iotest(flags):
@@ -113,6 +112,8 @@ def get_keys(flags):
 
 def log(handlers, tstamp_iteration, tspent_iteration, tsum, res, flags, epoch):
 
+    import psutil
+    
     report_step  = flags.REPORT_STEP and ((handlers.iteration+1) % flags.REPORT_STEP == 0)
 
     loss_seg = np.mean(res['loss_seg'])
