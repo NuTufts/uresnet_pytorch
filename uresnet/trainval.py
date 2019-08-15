@@ -55,8 +55,6 @@ class trainval(object):
         Run forward for
         flags.BATCH_SIZE / (flags.MINIBATCH_SIZE * len(flags.GPUS)) times
         """
-        # taritree: for debug
-        #from ROOT import TH1D, TCanvas
 
         res_combined = {}
         for idx in range(len(data_blob['data'])):
@@ -72,8 +70,8 @@ class trainval(object):
             #     nabovethresh = np.sum( (data[:,3]>=10) )
             #     print("above thresh: {}".format(nabovethresh))
             #     iabove = 0
-            #     #thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=data.dtype  )
-            #     thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=np.float32  )
+            #     thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=data.dtype  )
+            #     #thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=np.float32  )            
             #     for i in xrange(data.shape[0]):
             #         if data[i,3]>=10:
             #             thresh_data[iabove,:]  = data[i,:]
@@ -103,6 +101,7 @@ class trainval(object):
                     res_combined[key].extend(res[key])
 
             # visualization (for debug): Taritree
+            # ====================================
             # seg = res['segmentation'][0]
             # pred = np.argmax(seg, axis=1)
             # pred[ pred>=2 ] = 3
@@ -110,9 +109,10 @@ class trainval(object):
             # pred[ pred==0 ] = 1
             # pred *= 60
 
-            # dataview = np.zeros( (512,512) )            
-            # predview = np.zeros( (512,512) )
+            # dataview = np.zeros( self._flags.SPATIAL_SIZE )            
+            # predview = np.zeros( self._flags.SPATIAL_SIZE )
 
+            # from ROOT import TH1D, TCanvas
             # hpixels = TH1D("hpixels",";pixel values;",1000, 0, 100 )
             # hlow    = TH1D("hlow",";pixel values;",1000, 0, 10 )        
             
@@ -163,7 +163,7 @@ class trainval(object):
         # print(label.shape, np.unique(label, return_counts=True))
         #matplotlib.image.imsave('label0.png', label[0, 0, ...])
         # matplotlib.image.imsave('label1.png', label[1, 0, ...])
-        #print("_forward: train={}".format(self._flags.TRAIN))
+        print("_forward: train={}".format(self._flags.TRAIN))
         
         with torch.set_grad_enabled(self._flags.TRAIN):
             # Segmentation
