@@ -8,8 +8,11 @@ import sys
 from uresnet.ops import GraphDataParallel
 import uresnet.models as models
 import numpy as np
-import matplotlib
-from matplotlib import pyplot as plt
+try:
+    import matplotlib
+    from matplotlib import pyplot as plt
+except:
+    pass
 
 
 class trainval(object):
