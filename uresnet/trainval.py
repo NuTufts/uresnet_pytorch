@@ -63,34 +63,36 @@ class trainval(object):
                 blob[key] = data_blob[key][idx]
 
             # we threshold the data: hack by Taritree for debugging
-            # for idx in xrange(len(blob['data'])):
-            #     print("elements in idx[{}]: {}".format(idx,len(blob['data'][idx])))
-            #     #print("dtype for idx[{}]: {}".format(idx,blob['data'][idx].dtype))
-            #     data  = blob['data'][idx]
-            #     nabovethresh = np.sum( (data[:,3]>=10) )
-            #     print("above thresh: {}".format(nabovethresh))
-            #     iabove = 0
-            #     thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=data.dtype  )
-            #     #thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=np.float32  )            
-            #     for i in xrange(data.shape[0]):
-            #         if data[i,3]>=10:
-            #             thresh_data[iabove,:]  = data[i,:]
-            #             iabove+=1
+            if False:
+                print("thresholding hack by Taritree")
+                for idx in xrange(len(blob['data'])):
+                    print("elements in idx[{}]: {}".format(idx,len(blob['data'][idx])))
+                    #print("dtype for idx[{}]: {}".format(idx,blob['data'][idx].dtype))
+                    data  = blob['data'][idx]
+                    nabovethresh = np.sum( (data[:,3]>=10) )
+                    print("above thresh: {}".format(nabovethresh))
+                    iabove = 0
+                    thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=data.dtype  )
+                    #thresh_data  = np.zeros( (nabovethresh,data.shape[1]),  dtype=np.float32  )            
+                    for i in xrange(data.shape[0]):
+                        if data[i,3]>=10:
+                            thresh_data[iabove,:]  = data[i,:]
+                            iabove+=1
 
-            #     if 'label' in blob:
-            #         label = blob['label'][idx]                
-            #         thresh_label = np.zeros( (nabovethresh,label.shape[1]), dtype=label.dtype )
-            #         iabove = 0
-            #         for i in xrange(data.shape[0]):
-            #             if data[i,3]>=10:
-            #                 thresh_label[iabove,:] = label[i,:]
-            #                 iabove+=1
+                    if 'label' in blob:
+                        label = blob['label'][idx]                
+                        thresh_label = np.zeros( (nabovethresh,label.shape[1]), dtype=label.dtype )
+                        iabove = 0
+                        for i in xrange(data.shape[0]):
+                            if data[i,3]>=10:
+                                thresh_label[iabove,:] = label[i,:]
+                                iabove+=1
 
-            #     blob['data'][idx]  = thresh_data
-            #     if 'label' in blob:
-            #         blob['label'][idx] = thresh_label
+                    blob['data'][idx]  = thresh_data
+                    if 'label' in blob:
+                        blob['label'][idx] = thresh_label
 
-            #     np.savez('dump.npz',data=thresh_data)
+                #np.savez('dump.npz',data=thresh_data)
                     
             res = self._forward(blob,
                                 epoch=epoch)
@@ -102,40 +104,47 @@ class trainval(object):
 
             # visualization (for debug): Taritree
             # ====================================
-            # seg = res['segmentation'][0]
-            # pred = np.argmax(seg, axis=1)
-            # pred[ pred>=2 ] = 3
-            # pred[ pred==1 ] = 2
-            # pred[ pred==0 ] = 1
-            # pred *= 60
+            if False:
+                seg = res['segmentation'][0]
+                pred = np.argmax(seg, axis=1)
+                pred[ pred>=2 ] = 3
+                pred[ pred==1 ] = 2
+                pred[ pred==0 ] = 1
+                pred *= 60
 
-            # dataview = np.zeros( self._flags.SPATIAL_SIZE )            
-            # predview = np.zeros( self._flags.SPATIAL_SIZE )
-
-            # from ROOT import TH1D, TCanvas
-            # hpixels = TH1D("hpixels",";pixel values;",1000, 0, 100 )
-            # hlow    = TH1D("hlow",";pixel values;",1000, 0, 10 )        
-            
-            # data = data_blob['data'][0][0]
-            # for idx in xrange(data.shape[0] ):
-            #     dataview[ int(data[idx,0]), int(data[idx,1]) ] = data[idx,3]
-            #     predview[ int(data[idx,0]), int(data[idx,1]) ] = pred[idx]
-
-            #     hpixels.Fill( float(data[idx,3]) )
-            #     hlow.Fill( float(data[idx,3]) )            
+                if type(self._flags.SPATIAL_SIZE) is int:
+                    dataview = np.zeros( (self._flags.SPATIAL_SIZE, self._flags.SPATIAL_SIZE) )
+                    predview = np.zeros( (self._flags.SPATIAL_SIZE, self._flags.SPATIAL_SIZE) )
+                else:
+                    dataview = np.zeros( self._flags.SPATIAL_SIZE )
+                    predview = np.zeros( self._flags.SPATIAL_SIZE )
+                    
+                print("dataview shape: ",dataview.shape)
                 
-            # matplotlib.image.imsave('pred0.png', predview)
-            # matplotlib.image.imsave('data0.png', dataview)
+                from ROOT import TH1D, TCanvas
+                hpixels = TH1D("hpixels",";pixel values;",1000, 0, 100 )
+                hlow    = TH1D("hlow",";pixel values;",1000, 0, 10 )        
+            
+                data = data_blob['data'][0][0]
+                for idx in xrange(data.shape[0] ):
+                    dataview[ int(data[idx,0]), int(data[idx,1]) ] = data[idx,3]
+                    predview[ int(data[idx,0]), int(data[idx,1]) ] = pred[idx]
+
+                    hpixels.Fill( float(data[idx,3]) )
+                    hlow.Fill( float(data[idx,3]) )            
+                
+                matplotlib.image.imsave('pred0.png', predview)
+                matplotlib.image.imsave('data0.png', dataview)
 
 
-            # canv = TCanvas("cpixel","pixels",1200,500)
-            # canv.Divide(2,1)
-            # canv.cd(1)
-            # hpixels.Draw("hist")
-            # canv.cd(2)
-            # hlow.Draw("hist")
-            # canv.Draw()
-            # canv.SaveAs("hist0.png")
+                canv = TCanvas("cpixel","pixels",1200,500)
+                canv.Divide(2,1)
+                canv.cd(1)
+                hpixels.Draw("hist")
+                canv.cd(2)
+                hlow.Draw("hist")
+                canv.Draw()
+                canv.SaveAs("hist0.png")
             
             
 
