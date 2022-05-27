@@ -1,1 +1,1 @@
-from iotools import io_factory
+from .iotools import io_factory

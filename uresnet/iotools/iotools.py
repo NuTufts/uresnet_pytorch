@@ -1,5 +1,5 @@
-from iotools_sparse import io_larcv_sparse
-from iotools_dense import io_larcv_dense
+from .iotools_sparse import io_larcv_sparse
+from .iotools_dense import io_larcv_dense
 
 
 def io_factory(flags):

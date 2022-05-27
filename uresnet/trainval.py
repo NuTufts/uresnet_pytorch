@@ -274,6 +274,16 @@ class trainval(object):
                 #         print('Ignoring %s' % key)
                 # new_state = self._net.state_dict()
                 # new_state.update(checkpoint['state_dict'])
+
+                for key in checkpoint['state_dict']:
+                    #print("state_dict key: ",key)
+                    if "weight" in key and len(checkpoint['state_dict'][key].shape)==3:
+                        w_orig = checkpoint['state_dict'][key]
+                        #print( " orig: ",w_orig.shape)
+                        w_new = torch.unsqueeze( w_orig, 1 )
+                        #print("  new: ",w_new.shape)
+                        checkpoint['state_dict'][key] = w_new
+                
                 self._net.load_state_dict(checkpoint['state_dict'], strict=False)
                 if self._flags.TRAIN:
                     # This overwrites the learning rate, so reset the learning rate

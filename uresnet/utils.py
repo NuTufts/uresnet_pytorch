@@ -177,21 +177,21 @@ def compute_metrics_sparse(data_v, label_v, softmax_v, idx_v, N=192, particles=N
             # res['cluster_acc'].append(cluster_acc)
 
             classes, class_count = np.unique(event_label, return_counts=True)
-#            print('____________________________________________')
-#	    print ( classes)
-#            print('____________________________________________')
-# 	    print ( class_count)
-	    class_pixel = []
+            #            print('____________________________________________')
+            #	    print ( classes)
+            #            print('____________________________________________')
+            # 	    print ( class_count)
+            class_pixel = []
             class_acc = []
             class_mean_softmax = []
             # class_cluster_acc = []
             num_classes = event_softmax.shape[1]
-	    confusion_matrix = np.zeros((num_classes, num_classes), dtype=np.int32)
+            confusion_matrix = np.zeros((num_classes, num_classes), dtype=np.int32)
             energy_confusion_matrix = np.zeros((num_classes, num_classes), dtype=np.float32)
             for c in range(num_classes):
                 class_index = event_label == c
-#                print('checking devision by 0____%f for c = %d' % (len(event_label[class_index]), c) )
-		class_acc.append((event_label[class_index] == predictions[class_index]).astype(np.int32).sum() / float(len(event_label[class_index])))
+                #                print('checking devision by 0____%f for c = %d' % (len(event_label[class_index]), c) )
+                class_acc.append((event_label[class_index] == predictions[class_index]).astype(np.int32).sum() / float(len(event_label[class_index])))
                 # class_cluster_index = event_label[clusters_index] == c
                 # class_cluster_acc.append((event_label[clusters_index][class_cluster_index] == predictions[clusters_index][class_cluster_index]).astype(np.int32).sum() / float(len(event_label[clusters_index][class_cluster_index])))
                 class_mean_softmax.append(np.mean(correct_softmax[class_index]))
