@@ -179,7 +179,7 @@ def forwardpass( plane, nrows, ncols, sparse_bson_list, weights_filepath ):
         
 if __name__ == "__main__":
 
-    print("Test Inference Sparse-Infill")
+    print("Inference for Sparse-UResNet Semantic Segmentation Network")
     import ROOT 
     from ROOT import std
     from larlite import larlite
