@@ -112,7 +112,8 @@ def forwardpass( plane, nrows, ncols, sparse_bson_list, weights_filepath ):
         idx      = 0
         for npts,img2d in zip( npts_v, sparsedata_v ):
             endidx   = startidx+npts
-            spimg_np = larcv.as_sparseimg_ndarray( img2d, larcv.msg.kNORMAL )
+            #spimg_np = larcv.as_sparseimg_ndarray( img2d, larcv.msg.kNORMAL )
+            spimg_np = larcv.as_sparseimg_ndarray( img2d, 2 )
             #print("spimg_np: {}".format(spimg_np[:,0:2]))
 
             # coords
@@ -159,7 +160,8 @@ def forwardpass( plane, nrows, ncols, sparse_bson_list, weights_filepath ):
             for i in range(5):
                 meta_v.push_back(meta)
             
-            ssnetout_spimg = larcv.sparseimg_from_ndarray( ssnetout_wcoords, meta_v, larcv.msg.kDEBUG )
+            #ssnetout_spimg = larcv.sparseimg_from_ndarray( ssnetout_wcoords, meta_v, larcv.msg.kDEBUG )
+            ssnetout_spimg = larcv.sparseimg_from_ndarray( ssnetout_wcoords, meta_v, 0 )            
             bson = larcv.json.as_bson_pybytes( ssnetout_spimg, rseid[0], rseid[1], rseid[2], rseid[3] )
                                           
             bson_reply.append(bson)
@@ -218,7 +220,7 @@ if __name__ == "__main__":
         io.read_entry(ientry)
 
         # Event Image
-        ev_img = io.get_data( larcv.kProductImage2D, "wire" )
+        ev_img = io.get_data( "image2d", "wire" )
         img_v  = ev_img.Image2DArray()
 
         results_v = {}
@@ -252,8 +254,8 @@ if __name__ == "__main__":
             input_v[p] = pimg_v.at(0)
 
         # unpack bson
-        evout_ssnet = outlcv.get_data( larcv.kProductSparseImage, "sparsessnet" )
-        evout_input = outlcv.get_data( larcv.kProductImage2D, "ssnetinput" )
+        evout_ssnet = outlcv.get_data( "sparseimage", "sparsessnet" )
+        evout_input = outlcv.get_data( "image2d", "ssnetinput" )
         for p,bson in results_v.items():
             c_run    = c_int()
             c_subrun = c_int()
