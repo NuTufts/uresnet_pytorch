@@ -77,3 +77,4 @@ for i in range(iolcv.get_n_entries()):
 #iolcv_out.reverse_all_products()
 iolcv_out.finalize()
 
+os._exit(0)
