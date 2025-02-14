@@ -290,7 +290,7 @@ class trainval(object):
                     self._optimizer.load_state_dict(checkpoint['optimizer'])
                     for g in self._optimizer.param_groups:
                         g['lr'] = self._flags.LEARNING_RATE
-                iteration = checkpoint['global_step'] + 1
+                    iteration = checkpoint['global_step'] + 1
             print('Done.')
 
         return iteration

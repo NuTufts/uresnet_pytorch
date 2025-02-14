@@ -273,3 +273,4 @@ if __name__ == "__main__":
     outlcv.finalize()
     io.finalize()
 
+    os._exit(0)
