@@ -191,18 +191,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("run Sparse SSNet")
     parser.add_argument("--weight-dir","-w",required=True,type=str,help="Weight files")
     parser.add_argument("--input-larcv","-i",required=True,type=str,help="LArCV file with ADC images")
-    parser.add_argument("--tickforward",default=False,action='store_true',help="If flag given, don't reverse time of input image2d before running")
+    parser.add_argument("--tickbackward","-tb",default=False,action='store_true',help="If flag given, reverse time of input image2d before running")
     parser.add_argument("--output", "-o",required=True,type=str,help="output file name")
     args = parser.parse_args( sys.argv[1:] )
 
-    tickdir = larcv.IOManager.kTickBackward
-    if args.tickforward:
-        tickdir = larcv.IOManager.kTickForward
+    tickdir = larcv.IOManager.kTickForward
+    if args.tickbackward:
+        tickdir = larcv.IOManager.kTickBackward
     
     supera_file = sys.argv[1]
     io = larcv.IOManager(larcv.IOManager.kREAD,"supera",tickdir)
     io.add_in_file( args.input_larcv )
-    io.reverse_all_products()
+    if args.tickbackward:
+        io.reverse_all_products()
     io.initialize()
 
     outlcv = larcv.IOManager(larcv.IOManager.kWRITE,"lcvout")

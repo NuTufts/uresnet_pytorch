@@ -10,6 +10,7 @@ from larcv import larcv
 parser = argparse.ArgumentParser("2D larcv event display script")
 parser.add_argument("-i", "--infile", type=str, required=True, help="input larcv images file")
 parser.add_argument("-o", "--outfile", type=str, required=True, help="output larcv images file")
+parser.add_argument("-tb", "--tickbackward", default=False, action=store_true, help="store output images in time reverse order")
 args = parser.parse_args()
 
 iolcv = larcv.IOManager(larcv.IOManager.kREAD, "IOManager_In", larcv.IOManager.kTickForward)
@@ -17,7 +18,10 @@ iolcv.add_in_file(args.infile)
 #iolcv.reverse_all_products()
 iolcv.initialize()
 
-iolcv_out = larcv.IOManager(larcv.IOManager.kWRITE, "IOManager_Out", larcv.IOManager.kTickBackward)
+tickdir = larcv.IOManager.kTickForward
+if args.tickbackward:
+    tickdir = larcv.IOManager.kTickBackward
+iolcv_out = larcv.IOManager(larcv.IOManager.kWRITE, "IOManager_Out", tickdir)
 iolcv_out.set_out_file(args.outfile)
 iolcv_out.initialize()
 
