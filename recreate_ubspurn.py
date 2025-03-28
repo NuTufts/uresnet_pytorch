@@ -60,7 +60,9 @@ for i in range(iolcv.get_n_entries()):
       col = int(sparseimg_v[p].pixellist().at(ipt*stride+1))
       #xrow = meta.row( sparsemeta.pos_y( row ) )
       #xcol = meta.col( sparsemeta.pos_x( col ) )
-      xrow = reverse_row(row)
+      xrow = row
+      if args.tickbackward:
+        xrow = reverse_row(row)
       xcol = col
       hip = sparseimg_v[p].pixellist().at(ipt*stride+2)
       mip = sparseimg_v[p].pixellist().at(ipt*stride+3)
