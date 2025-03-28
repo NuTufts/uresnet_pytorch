@@ -10,7 +10,7 @@ from larcv import larcv
 parser = argparse.ArgumentParser("2D larcv event display script")
 parser.add_argument("-i", "--infile", type=str, required=True, help="input larcv images file")
 parser.add_argument("-o", "--outfile", type=str, required=True, help="output larcv images file")
-parser.add_argument("-tb", "--tickbackward", default=False, action=store_true, help="store output images in time reverse order")
+parser.add_argument("-tb", "--tickbackward", default=False, action="store_true", help="store output images in time reverse order")
 args = parser.parse_args()
 
 iolcv = larcv.IOManager(larcv.IOManager.kREAD, "IOManager_In", larcv.IOManager.kTickForward)
