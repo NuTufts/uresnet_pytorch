@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser("2D larcv event display script")
 parser.add_argument("-i", "--infile", type=str, required=True, help="input larcv images file")
 parser.add_argument("-o", "--outfile", type=str, required=True, help="output larcv images file")
 parser.add_argument("-tb", "--tickbackward", default=False, action="store_true", help="store output images in time reverse order")
+parser.add_argument("-n","--nentries",default=-1,type=int,help="number of entries to run. default=-1 (all entries)")
 args = parser.parse_args()
 
 iolcv = larcv.IOManager(larcv.IOManager.kREAD, "IOManager_In", larcv.IOManager.kTickForward)
@@ -29,8 +30,12 @@ iolcv_out.initialize()
 def reverse_row(row):
   return abs(row-1007)
 
+nentries = iolcv.get_n_entries()
+if args.nentries>0 and args.nentries<nentries:
+    nentries = args.nentries
 
-for i in range(iolcv.get_n_entries()):
+
+for i in range(nentries):
 
   iolcv.read_entry(i)
   evt_wire = iolcv.get_data(larcv.kProductImage2D, "wire")
@@ -83,4 +88,4 @@ for i in range(iolcv.get_n_entries()):
 #iolcv_out.reverse_all_products()
 iolcv_out.finalize()
 
-os._exit(0)
+#os._exit(0)

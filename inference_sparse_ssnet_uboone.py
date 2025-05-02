@@ -193,6 +193,7 @@ if __name__ == "__main__":
     parser.add_argument("--input-larcv","-i",required=True,type=str,help="LArCV file with ADC images")
     parser.add_argument("--tickbackward","-tb",default=False,action='store_true',help="If flag given, reverse time of input image2d before running")
     parser.add_argument("--output", "-o",required=True,type=str,help="output file name")
+    parser.add_argument("--nentries","-n",default=-1,type=int,help="number of entries to run. default=-1 (all entries)")
     args = parser.parse_args( sys.argv[1:] )
 
     tickdir = larcv.IOManager.kTickForward
@@ -216,6 +217,8 @@ if __name__ == "__main__":
                 weight_dir+"/Plane2_32_5_weighting.ckpt" ]
 
     nentries = io.get_n_entries()
+    if args.nentries>0 and args.nentries<nentries:
+        nentries = args.nentries
 
     for ientry in range(nentries):
         io.read_entry(ientry)
@@ -276,4 +279,4 @@ if __name__ == "__main__":
     outlcv.finalize()
     io.finalize()
 
-    os._exit(0)
+    #os._exit(0)
